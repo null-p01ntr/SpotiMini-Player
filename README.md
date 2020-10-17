@@ -30,10 +30,11 @@ Enjoy
 
 ## Trouble Shooting
 * Delete the .cache file and repeat login process
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 
-
-
-
-
-
-#### 0- developed by @null_p01nter -0
+#### developed by @null_p01nter
+	for suggestions and bug reports DM me from [twitter](https://twitter.com/null_p01nter)
