@@ -36,5 +36,5 @@ Enjoy
 <br/>
 <br/>
 
-#### developed by @null_p01nter
-	for suggestions and bug reports DM me from [twitter](https://twitter.com/null_p01nter)
+#### developed by [null_p01nter](https://twitter.com/null_p01nter)
+* DM me for suggestions and bug reports
