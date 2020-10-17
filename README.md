@@ -8,7 +8,7 @@ iTunes-like mini player for Spotify
 * Enter your Spotify username to black terminal window
 * If you dont know your username you can copy from [Spotify Account Overview](https://www.spotify.com/tr/account/overview/)
 * Your default browser will pop-up with Spotify login page, log in to your account and grant acces to application
-* After log in, the browser will redirect to an "Example Domain" page
+* After log in, the browser will redirect to application's page but the url has a code in it
 * Copy the whole URL and paste it to the terminal window
 
   * !!make sure there is a file named ".cache-{username you entered}" created in the main folder after you logged in!!
