@@ -20,12 +20,9 @@ Enjoy
 --How to Use--
 0- The play/pause button will appear in the bottom middle when you hover it with mouse
 0- The sides of the album art as "previous track" and "next track" buttons
-0- To close use alt-F4 or right click to the taskbar icon  
+0- Right click anywhere to close and toggle different options
 
---Warnings--
-0- The application works only when Spotify is active in at least one of your devices
-
---Trouble Shooting--
+--Troubleshooting--
 0- Delete the .cache file and repeat login process
 
 
