@@ -9,6 +9,8 @@
 0- Copy the whole URL and paste it to the terminal window
 
 !!make sure there is a file named ".cache-{username you entered}" created in the main folder after you logged in!!
+(the cache file's location will be different in Mac computers -> see Troubleshooting section
+
 
 0- Now you linked the app with your account you can freely close the terminal and run SpotiMini.exe
 0- You dont need to repeat login process
@@ -24,7 +26,7 @@ Enjoy
 
 --Troubleshooting--
 0- Delete the .cache file and repeat login process
-
+0- Mac OS .cache location: right click the app "Show Package Contents" -> Contents/Resources press cmd+shift+."dot" to reveal hidden files 
 
 
 
