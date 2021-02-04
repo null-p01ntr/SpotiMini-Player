@@ -22,9 +22,10 @@ iTunes-like mini player for Spotify
 Enjoy!!
 
 ## How to Use
-* The play/pause button will appear in the bottom middle when you hover it with mouse
-* The sides of the album art as "previous track" and "next track" buttons
-* Right click anywhere to close or toggle different options
+* The play/pause button will appear in the bottom middle when you hover it with mouse or you can double click to play/pause 
+* The left and right edges of the album art acts as "previous track" and "next track" buttons
+* You can grab from the corners and resize the window
+* Right click anywhere to access different options
 
 ## Troubleshooting
 * Delete the .cache file and repeat login process
