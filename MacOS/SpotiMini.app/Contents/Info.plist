@@ -76,15 +76,15 @@
 	<array/>
 	<key>PyRuntimeLocations</key>
 	<array>
-		<string>@executable_path/../Frameworks/Python.framework/Versions/3.8/Python</string>
+		<string>@executable_path/../Frameworks/Python3.framework/Versions/3.8/Python3</string>
 	</array>
 	<key>PythonInfoDict</key>
 	<dict>
 		<key>PythonExecutable</key>
-		<string>/Library/Frameworks/Python.framework/Versions/3.8/bin/python3</string>
+		<string>/Applications/Xcode.app/Contents/Developer/usr/bin/python3</string>
 		<key>PythonLongVersion</key>
-		<string>3.8.6 (v3.8.6:db455296be, Sep 23 2020, 13:31:39) 
-[Clang 6.0 (clang-600.0.57)]</string>
+		<string>3.8.2 (default, Dec 21 2020, 15:06:04) 
+[Clang 12.0.0 (clang-1200.0.32.29)]</string>
 		<key>PythonShortVersion</key>
 		<string>3.8</string>
 		<key>py2app</key>
@@ -94,7 +94,7 @@
 			<key>template</key>
 			<string>app</string>
 			<key>version</key>
-			<string>0.22</string>
+			<string>0.23</string>
 		</dict>
 	</dict>
 </dict>

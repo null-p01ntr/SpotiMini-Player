@@ -1,7 +1,7 @@
 def _reset_sys_path():
     # Clear generic sys.path[0]
-    import sys
     import os
+    import sys
 
     resources = os.environ["RESOURCEPATH"]
     while sys.path[0] == resources:
@@ -395,8 +395,8 @@ def _run():
 
 
 def _setup_ctypes():
-    from ctypes.macholib import dyld
     import os
+    from ctypes.macholib import dyld
 
     frameworks = os.path.join(os.environ["RESOURCEPATH"], "..", "Frameworks")
     dyld.DEFAULT_FRAMEWORK_FALLBACK.insert(0, frameworks)
@@ -404,15 +404,6 @@ def _setup_ctypes():
 
 
 _setup_ctypes()
-
-
-def _boot_tkinter():
-    import os
-
-    resourcepath = os.environ["RESOURCEPATH"]
-    os.putenv("TCL_LIBRARY", os.path.join(resourcepath, "lib/tcl8"))
-    os.putenv("TK_LIBRARY", os.path.join(resourcepath, "lib/tk8.6"))
-_boot_tkinter()
 
 
 DEFAULT_SCRIPT='spotimini.py'
