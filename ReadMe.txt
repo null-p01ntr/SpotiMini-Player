@@ -1,6 +1,6 @@
 --First Time Setup--
 
-0- Make sure Spotify is running from at least one of your device  
+0- Make sure Spotify is running from at least one of your devices  
 0- Run SpotiMiniLogin
 0- Enter your Spotify username to terminal window
 0- If you dont know your username you can copy from https://www.spotify.com/tr/account/overview/
@@ -26,7 +26,7 @@ Enjoy!!
 
 --Troubleshooting--
 0- Delete the .cache file and repeat login process
-0- Mac OS .cache location: right click the app "Show Package Contents" -> Contents/Resources press cmd+shift+."dot" to reveal hidden files 
+0- Mac OS .cache location: right click the app "Show Package Contents" -> Contents/Resources press "cmd+shift+." (dot) to reveal hidden files 
 
 
 
