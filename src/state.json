@@ -1,0 +1,11 @@
+{
+    "toggles": {
+        "stay_on": false,
+        "title": false
+    },
+    "positions": {
+        "x": 810,
+        "y": 179
+    },
+    "size": 622
+}
