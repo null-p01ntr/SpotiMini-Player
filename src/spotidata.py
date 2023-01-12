@@ -14,6 +14,9 @@ class SpotifyData:
         self.spotifyObject = sptObj
         if sptObj:
             self.data_dict = self.fetchData(sptObj)
+        else:
+            print('empty SpotifyObject')
+            self.spotifyObject = self.auth()
 
     def auth(self):
         if os.path.isfile('creds.json') and os.access('creds.json', os.R_OK):
@@ -42,10 +45,11 @@ class SpotifyData:
                         'client_id': 'ENTER CLIENT ID HERE',
                         'client_secret': 'ENTER CLIENT SECRET HERE'
                     }))
-            return 0
+            print("'creds.json' has been created, enter your credentials")
+            quit()
 
     def fetchData(self, spotifyObject):
-        # self.auth()
+        # WARNING spoti_dict crashing when changed from spotify
         play_state = 'play'
         lastPlayed = spotifyObject.current_user_recently_played(1)
         online = False
@@ -82,17 +86,7 @@ class SpotifyData:
                 else:
                     play_state = 'play'
             else:
-                artist = lastPlayed['items'][0]['track']['artists'][0]['name']
-                trackName = lastPlayed['items'][0]['track']['name']
-                albumName = lastPlayed['items'][0]['track']['album']['name']
-                title = trackName + ' - ' + artist + ' - ' + albumName
-
-                album_art = lastPlayed['items'][0]['track']['album']['images'][
-                    0]['url']
-                cover_data = urllib.request.urlopen(album_art).read()
-                # context=ssl.create_default_context(cafile=certifi.where())
-                toggle_states = [False, 'off']
-                online = False
+                raise Exception('currentTrack Error')
 
             data_dict = {
                 'play_state': play_state,
@@ -103,7 +97,7 @@ class SpotifyData:
                 'online': online
             }
             return data_dict
-
+        
         except Exception as err:
             artist = lastPlayed['items'][0]['track']['artists'][0]['name']
             trackName = lastPlayed['items'][0]['track']['name']
@@ -115,8 +109,19 @@ class SpotifyData:
             cover_data = urllib.request.urlopen(album_art).read()
             toggle_states = [False, 'off']
             self.online = False
-            print(err)
-            self.logger(err)
+            
+            print(f'---{err} Handled---')
+            # self.logger(err)
+            
+            data_dict = {
+                'play_state': play_state,
+                'lastPlayed': lastPlayed,
+                'title': title,
+                'cover_data': cover_data,
+                'toggle_states': toggle_states,
+                'online': online
+            }
+            return data_dict
 
     # BUTTON FUNCTIONS
 
@@ -147,12 +152,14 @@ class SpotifyData:
     def repeat(self, tog):
         self.spotifyObject.repeat(tog)
 
+    # LOGGING
+
     def logger(self, log_message):
         # IDEA json logger
         exc_type, exc_obj, exc_tb = sys.exc_info()
         file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         error_message = f'{str(exc_type)} {str(file)} {str(exc_tb.tb_lineno)}\n{log_message}'
-        print(error_message)
+        # print(error_message)
         with open('log.txt', 'a') as log_file:
             log_file.write(
                 f'{datetime.now().strftime("%d-%m-%Y %H:%M")}--{error_message}\n\n'

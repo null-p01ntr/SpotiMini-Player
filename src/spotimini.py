@@ -10,11 +10,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import QThread, Qt, QPoint, pyqtSignal
 from PyQt5.QtWidgets import QMenu
 
-sptObj = SpotifyData().auth()
-if sptObj == 0:
-    print("'creds.json' has been created, enter your credentials")
-    quit()
-
+sptObj = SpotifyData().spotifyObject
 
 class LiveFetch(QThread):
     sig = pyqtSignal(int)
@@ -93,6 +89,7 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.albumart.setMaximumSize(QtCore.QSize(640, 640))
 
         # title
+        self.prev_title = self.spoti_dict['title']
         self.song_info = QtWidgets.QLabel(self)
         # TODO find font
         self.song_info.setFont(QFont('Arial', 10, QFont.Bold))
@@ -104,16 +101,15 @@ class MiniPlayer(QtWidgets.QMainWindow):
             ".QLabel::hover{background-color : rgba(255, 255, 255, 160);}")
         self.song_info.setHidden(not self.titleTog)
 
-        self.timeLine = QtCore.QTimeLine()
         # linear Timeline
+        self.timeLine = QtCore.QTimeLine()
         self.timeLine.setCurveShape(QtCore.QTimeLine.LinearCurve)
         self.timeLine.frameChanged.connect(self.setText)
+        #IDEA infinite loop??
         self.timeLine.finished.connect(self.nextNews)
         self.signalMapper = QtCore.QSignalMapper(self)
         self.signalMapper.mapped[str].connect(self.setTlText)
-
         # TODO dont slide if text fits
-        # TODO start again while ending
         self.feed()
 
         # size grips
@@ -186,18 +182,17 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.show()
 
     def feed(self):
+        # ERROR space blocks title at the end ('#' safe)
         fm = self.song_info.fontMetrics()
-        self.nl = int(self.song_info.width())  # shown stringlength
-        news = [(self.spoti_dict['title'])]
-        appendix = ' ' * self.nl  # add some spaces at the end
-        news.append(appendix)
-        delimiter = ' '  # shown between the messages
-        self.news = delimiter.join(news)
-        # number of letters in news = frameRange
+        self.nl = int(self.song_info.width()/fm.averageCharWidth())
+        self.news = (self.spoti_dict['title'])
+        appendix = ' ' *(self.nl-15)
+        self.news.join(appendix)
         newsLength = len(self.news)
-        lps = 5  # letters per second
-        # duration until the whole string is shown in milliseconds
-        dur = newsLength * 500 / lps
+        lps = 15
+        dur = newsLength * 1000 / lps
+        
+        print(self.nl, newsLength)
         self.timeLine.setDuration(int(dur))
         self.timeLine.setFrameRange(5, newsLength)
         self.timeLine.start()
@@ -211,7 +206,8 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.song_info.setText(text)
 
     def nextNews(self):
-        self.feed()  # start again
+        print('title finished')
+        self.feed() # start again
 
     def setTlText(self, text):
         string = '{} pressed'.format(text)
@@ -245,11 +241,11 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
     def shuffle_Toggle(self):
         self.shuffTog = not self.shuffTog
-        SpotifyData(sptObj).shuff(self.shuffTog)
+        SpotifyData().shuff(self.shuffTog)
         # self.spoti_dict = SpotifyData().fetchData()
 
     def repeat_Toggle(self):
-        SpotifyData(sptObj).repeat(self.repState)
+        SpotifyData().repeat(self.repState)
         # self.spoti_dict = SpotifyData().fetchData()
 
     # LIVE DATA
@@ -262,10 +258,17 @@ class MiniPlayer(QtWidgets.QMainWindow):
     def updateData(self):
         _translate = QtCore.QCoreApplication.translate
         cover = QtGui.QPixmap()
+            
+        # update sliding title if song changed
+        if self.prev_title != self.spoti_dict['title']:
+            print('Song Changed')
+            self.timeLine.stop()
+            self.song_info.setText(_translate(
+                "MiniPlayer", "  " + self.spoti_dict['title']))
+            self.feed()
+        self.prev_title = self.spoti_dict['title']
+        
         self.setWindowTitle(_translate("MiniPlayer", self.spoti_dict['title']))
-        # TODO update title
-        # self.song_info.setText(_translate(
-        #     "MiniPlayer", "  " + self.spoti_dict['title']))
         cover.loadFromData(self.spoti_dict['cover_data'])
         self.albumart.setPixmap(cover)
 
