@@ -1,16 +1,17 @@
 import sys
-
-from PyQt5.QtGui import QFont, QFontDatabase
+import json
+from time import sleep
 
 from spotidata import SpotifyData
-import json
+from QtMarquee import MarqueeLabel
 
-from time import sleep
+from PyQt5.QtWidgets import QMenu, QLineEdit
 from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QThread, Qt, QPoint, pyqtSignal
-from PyQt5.QtWidgets import QMenu
 
 sptObj = SpotifyData().spotifyObject
+
 
 class LiveFetch(QThread):
     sig = pyqtSignal(int)
@@ -19,27 +20,27 @@ class LiveFetch(QThread):
         while True:
             MiniPlayer.spoti_dict = SpotifyData(sptObj).data_dict
             self.sig.emit(1)
-            sleep(0.05)
+            sleep(0.07)
 
 
 class MiniPlayer(QtWidgets.QMainWindow):
-    with open('state.json') as json_file:
+    with open("state.json") as json_file:
         state = json.load(json_file)
 
-    print('SpotiMini RUNNING')
+    print("SpotiMini RUNNING")
     spoti_dict = SpotifyData(sptObj).data_dict
 
     # load from state
-    stayTog = state['toggles']['stay_on']
-    titleTog = state['toggles']['title']
+    stayTog = state["toggles"]["stay_on"]
+    titleTog = state["toggles"]["title"]
     # load from current user
-    shuffTog = spoti_dict['toggle_states'][0]
-    repState = spoti_dict['toggle_states'][1]
+    shuffTog = spoti_dict["toggle_states"][0]
+    repState = spoti_dict["toggle_states"][1]
 
-    posX = state['positions']['x']
-    posY = state['positions']['y']
+    posX = state["positions"]["x"]
+    posY = state["positions"]["y"]
 
-    size = state['size']
+    size = state["size"]
 
     def __init__(self):
         super().__init__()
@@ -47,8 +48,10 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.setObjectName("MiniPlayer")
         self.setEnabled(True)
         self.resize(self.size, self.size)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred,
-                                           QtWidgets.QSizePolicy.Preferred)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
+        )
+
         # sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
         self.setMinimumSize(QtCore.QSize(150, 150))
@@ -56,61 +59,60 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.setBaseSize(QtCore.QSize(0, 0))
         self.setFocusPolicy(QtCore.Qt.NoFocus)
 
+        # INTERACTION ELEMENTS
         transBack = ".QPushButton{background-color : transparent;}"
+
         # play UI
         self.play_pause = QtWidgets.QPushButton(self)
         self.play_pause.setGeometry(
-            QtCore.QRect(int((self.size / 2) - 17), self.size - 50, 35, 35))
+            QtCore.QRect(int((self.size / 2) - 17), self.size - 50, 35, 35)
+        )
         self.play_pause.setObjectName("play_pause")
-        hoverShow = ".QPushButton::hover{border-image : url(img/" + \
-                    self.spoti_dict['play_state'] + ".png);}"
-        self.play_pause.setStyleSheet(transBack + hoverShow)
+        self.hoverShowPlay = (
+            ".QPushButton::hover{border-image : url(img/"
+            + self.spoti_dict["play_state"]
+            + ".png);}"
+        )
+        self.play_pause.setStyleSheet(transBack + self.hoverShowPlay)
+
         # next UI
         self.next = QtWidgets.QPushButton(self)
         self.next.setGeometry(QtCore.QRect(self.size - 35, 0, 35, self.size))
         self.next.setObjectName("next")
         self.next.setStyleSheet(transBack)
+
         # previous UI
         self.prev = QtWidgets.QPushButton(self)
         self.prev.setGeometry(QtCore.QRect(0, 0, 35, self.size))
         self.prev.setObjectName("prev")
         self.prev.setStyleSheet(transBack)
+
         # album art UI
         self.albumart = QtWidgets.QLabel(self)
         self.albumart.setGeometry(QtCore.QRect(0, 0, self.size, self.size))
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding,
-                                           QtWidgets.QSizePolicy.Expanding)
+        sizePolicy = QtWidgets.QSizePolicy(
+            QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding
+        )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.albumart.sizePolicy().hasHeightForWidth())
+        sizePolicy.setHeightForWidth(self.albumart.sizePolicy().hasHeightForWidth())
         self.albumart.setSizePolicy(sizePolicy)
         self.albumart.setMinimumSize(QtCore.QSize(150, 150))
         self.albumart.setMaximumSize(QtCore.QSize(640, 640))
 
-        # title
-        self.prev_title = self.spoti_dict['title']
-        self.song_info = QtWidgets.QLabel(self)
-        # TODO find font
-        self.song_info.setFont(QFont('Arial', 10, QFont.Bold))
-        self.song_info.setAlignment(QtCore.Qt.AlignRight
-                                    | QtCore.Qt.AlignVCenter)
+        # song info (marquee)
+        self.prev_title = self.spoti_dict["title"]
+        self.song_info = MarqueeLabel(self)
+        self.song_info.setText(self.spoti_dict["title"])
+        self.song_info.setDirection(Qt.RightToLeft)
+        self.song_info.setFont(QFont("Arial", 11, QFont.Bold))
+        self.song_info.setHidden(not self.titleTog)
         self.song_info.setGeometry(QtCore.QRect(5, 0, self.size - 10, 30))
         self.song_info.setStyleSheet(
-            ".QLabel{color:rgb(0,0,0); border-radius : 8;}" +
-            ".QLabel::hover{background-color : rgba(255, 255, 255, 160);}")
-        self.song_info.setHidden(not self.titleTog)
-
-        # linear Timeline
-        self.timeLine = QtCore.QTimeLine()
-        self.timeLine.setCurveShape(QtCore.QTimeLine.LinearCurve)
-        self.timeLine.frameChanged.connect(self.setText)
-        #IDEA infinite loop??
-        self.timeLine.finished.connect(self.nextNews)
-        self.signalMapper = QtCore.QSignalMapper(self)
-        self.signalMapper.mapped[str].connect(self.setTlText)
-        # TODO dont slide if text fits
-        self.feed()
+            """
+            QLabel{border-radius : 8;}                        
+            QLabel::hover{background-color : rgba(255, 255, 255, 150);}"""
+        )
 
         # size grips
         self.resizer1 = QtWidgets.QSizeGrip(self)
@@ -130,8 +132,7 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
         self.resizer4 = QtWidgets.QSizeGrip(self)
         # self.resizer4.setMaximumSize(640, 640)
-        self.resizer4.setGeometry(
-            QtCore.QRect(self.size - 15, self.size - 15, 15, 15))
+        self.resizer4.setGeometry(QtCore.QRect(self.size - 15, self.size - 15, 15, 15))
         self.resizer4.setVisible(True)
 
         self.albumart.raise_()
@@ -147,7 +148,7 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.oldPos = self.pos()
 
         cover = QtGui.QPixmap()
-        cover.loadFromData(self.spoti_dict['cover_data'])
+        cover.loadFromData(self.spoti_dict["cover_data"])
 
         self.albumart.setPixmap(cover)
         self.albumart.setScaledContents(True)
@@ -181,51 +182,18 @@ class MiniPlayer(QtWidgets.QMainWindow):
         self.updateThread()
         self.show()
 
-    def feed(self):
-        # ERROR space blocks title at the end ('#' safe)
-        fm = self.song_info.fontMetrics()
-        self.nl = int(self.song_info.width()/fm.averageCharWidth())
-        self.news = (self.spoti_dict['title'])
-        appendix = ' ' *(self.nl-15)
-        self.news.join(appendix)
-        newsLength = len(self.news)
-        lps = 15
-        dur = newsLength * 1000 / lps
-        
-        print(self.nl, newsLength)
-        self.timeLine.setDuration(int(dur))
-        self.timeLine.setFrameRange(5, newsLength)
-        self.timeLine.start()
-
-    def setText(self, number_of_frame):
-        if number_of_frame < self.nl:
-            start = 0
-        else:
-            start = number_of_frame - self.nl
-        text = '{}'.format(self.news[start:number_of_frame])
-        self.song_info.setText(text)
-
-    def nextNews(self):
-        print('title finished')
-        self.feed() # start again
-
-    def setTlText(self, text):
-        string = '{} pressed'.format(text)
-        self.textLabel.setText(string)
-
     # FUNCTIONALITY
-
     def play_pause_wrapper(self):
         SpotifyData(sptObj).play_pauseB()
-        # self.spoti_dict = SpotifyData().fetchData()
+        # self.spoti_dict = SpotifyData(sptObj).data_dict
 
     def nextB_wrapper(self):
         SpotifyData(sptObj).nextB()
-        # self.spoti_dict = SpotifyData().fetchData()
+        # self.spoti_dict = SpotifyData(sptObj).data_dict
 
     def prevB_wrapper(self):
         SpotifyData(sptObj).prevB()
-        # self.spoti_dict = SpotifyData().fetchData()
+        # self.spoti_dict = SpotifyData(sptObj).data_dict
 
     def stay_onToggle(self):
         self.stayTog = not self.stayTog
@@ -241,15 +209,14 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
     def shuffle_Toggle(self):
         self.shuffTog = not self.shuffTog
-        SpotifyData().shuff(self.shuffTog)
-        # self.spoti_dict = SpotifyData().fetchData()
+        SpotifyData(sptObj).shuff(self.shuffTog)
+        # self.spoti_dict = SpotifyData(sptObj).data_dict
 
     def repeat_Toggle(self):
-        SpotifyData().repeat(self.repState)
-        # self.spoti_dict = SpotifyData().fetchData()
+        SpotifyData(sptObj).repeat(self.repState)
+        # self.spoti_dict = SpotifyData(sptObj).data_dict
 
     # LIVE DATA
-
     def updateThread(self):
         self.thread = LiveFetch()
         self.thread.sig.connect(self.updateData)
@@ -258,49 +225,46 @@ class MiniPlayer(QtWidgets.QMainWindow):
     def updateData(self):
         _translate = QtCore.QCoreApplication.translate
         cover = QtGui.QPixmap()
-            
-        # update sliding title if song changed
-        if self.prev_title != self.spoti_dict['title']:
-            print('Song Changed')
-            self.timeLine.stop()
-            self.song_info.setText(_translate(
-                "MiniPlayer", "  " + self.spoti_dict['title']))
-            self.feed()
-        self.prev_title = self.spoti_dict['title']
-        
-        self.setWindowTitle(_translate("MiniPlayer", self.spoti_dict['title']))
-        cover.loadFromData(self.spoti_dict['cover_data'])
+
+        # update title if song changed
+        if self.prev_title != self.spoti_dict["title"]:
+            self.song_info.setText(self.spoti_dict["title"])
+        self.prev_title = self.spoti_dict["title"]
+
+        self.setWindowTitle(_translate("MiniPlayer", self.spoti_dict["title"]))
+        cover.loadFromData(self.spoti_dict["cover_data"])
         self.albumart.setPixmap(cover)
 
-        hoverShow = ".QPushButton::hover{border-image : url(img/" + \
-                    self.spoti_dict['play_state'] + ".png);}"
         self.play_pause.setStyleSheet(
-            ".QPushButton{background-color : transparent;}" + hoverShow)
+            ".QPushButton{background-color : transparent;}" + self.hoverShowPlay
+        )
 
-        self.shuffTog = self.spoti_dict['toggle_states'][0]
-        self.repState = self.spoti_dict['toggle_states'][1]
+        self.shuffTog = self.spoti_dict["toggle_states"][0]
+        self.repState = self.spoti_dict["toggle_states"][1]
 
     def errorMessage(self):
-        if not self.spoti_dict['online']:
+        if not self.spoti_dict["online"]:
             errorPopUp = QtWidgets.QMessageBox.warning(
-                self, 'Spotify Offline',
-                'Please start Spotify on one of your devices\n(or hit play button on Desktop App)',
-                QtWidgets.QMessageBox.Ok)
+                self,
+                "Spotify Offline",
+                "Please start Spotify on one of your devices\n(or hit play button on Desktop App)",
+                QtWidgets.QMessageBox.Ok,
+            )
 
     # WINDOW EVENTS
-
     def retranslateUI(self, MiniPlayer):
         _translate = QtCore.QCoreApplication.translate
 
-        MiniPlayer.setWindowTitle(
-            _translate("MiniPlayer", self.spoti_dict['title']))
+        MiniPlayer.setWindowTitle(_translate("MiniPlayer", self.spoti_dict["title"]))
         MiniPlayer.song_info.setText(
-            _translate("MiniPlayer", "  " + self.spoti_dict['title']))
+            _translate("MiniPlayer", "  " + self.spoti_dict["title"])
+        )
 
         _size = self.frameGeometry().width()
 
         MiniPlayer.play_pause.setGeometry(
-            QtCore.QRect(int((_size / 2) - 17.5), _size - 50, 35, 35))
+            QtCore.QRect(int((_size / 2) - 17.5), _size - 50, 35, 35)
+        )
         MiniPlayer.prev.setGeometry(QtCore.QRect(0, 0, 35, _size))
         MiniPlayer.next.setGeometry(QtCore.QRect(_size - 35, 0, 35, _size))
         MiniPlayer.song_info.setGeometry(QtCore.QRect(5, 0, _size - 10, 30))
@@ -308,65 +272,57 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
         MiniPlayer.resizer2.setGeometry(QtCore.QRect(0, _size - 15, 15, 15))
         MiniPlayer.resizer3.setGeometry(QtCore.QRect(_size - 15, 0, 15, 15))
-        MiniPlayer.resizer4.setGeometry(
-            QtCore.QRect(_size - 15, _size - 15, 15, 15))
+        MiniPlayer.resizer4.setGeometry(QtCore.QRect(_size - 15, _size - 15, 15, 15))
 
         MiniPlayer.resize(_size, _size)
 
     def resizeEvent(self, event):
         self.retranslateUI(self)
-        # ERROR title dissapears at 150x150
-        # album art
-        # self.albumart.resize(self.frameGeometry().width(),
-        #                      self.frameGeometry().height())
 
     def contextMenuEvent(self, event):
         contextMenu = QMenu(self)
 
         # always on top
-        stay_on = contextMenu.addAction('Always on Top')
+        stay_on = contextMenu.addAction("Always on Top")
         stay_on.setCheckable(True)
         stay_on.setChecked(self.stayTog)
         stay_on.toggled.connect(self.stay_onToggle)
 
         # show title
-        title = contextMenu.addAction('Show Title: ' +
-                                      self.spoti_dict['title'])
+        title = contextMenu.addAction("Show Title: " + self.spoti_dict["title"])
         title.setCheckable(True)
         title.setChecked(self.titleTog)
         title.toggled.connect(self.title_Toggle)
 
         # shuffle
-        shuffle = contextMenu.addAction('Shuffle')
+        shuffle = contextMenu.addAction("Shuffle")
         shuffle.setCheckable(True)
         shuffle.setChecked(self.shuffTog)
         shuffle.toggled.connect(self.shuffle_Toggle)
 
         # repeat
-        repeat = contextMenu.addMenu('Repeat mode')
+        repeat = contextMenu.addMenu("Repeat mode")
 
         # repeat off
-        repeatOff = repeat.addAction('Off')
+        repeatOff = repeat.addAction("Off")
         repeatOff.setCheckable(True)
-        repeatOff.setChecked(bool(self.repState == 'off'))
-        repeatOff.toggled.connect(lambda: SpotifyData(sptObj).repeat('off'))
+        repeatOff.setChecked(bool(self.repState == "off"))
+        repeatOff.toggled.connect(lambda: SpotifyData(sptObj).repeat("off"))
 
         # repeat track
-        repeatTrack = repeat.addAction('This track')
+        repeatTrack = repeat.addAction("This track")
         repeatTrack.setCheckable(True)
-        repeatTrack.setChecked(bool(self.repState == 'track'))
-        repeatTrack.toggled.connect(
-            lambda: SpotifyData(sptObj).repeat('track'))
+        repeatTrack.setChecked(bool(self.repState == "track"))
+        repeatTrack.toggled.connect(lambda: SpotifyData(sptObj).repeat("track"))
 
         # repeat context
-        repeatContext = repeat.addAction('Playlist')
+        repeatContext = repeat.addAction("Playlist")
         repeatContext.setCheckable(True)
-        repeatContext.setChecked(bool(self.repState == 'context'))
-        repeatContext.toggled.connect(
-            lambda: SpotifyData(sptObj).repeat('context'))
+        repeatContext.setChecked(bool(self.repState == "context"))
+        repeatContext.toggled.connect(lambda: SpotifyData(sptObj).repeat("context"))
 
         # close
-        close = contextMenu.addAction('Close')
+        close = contextMenu.addAction("Close")
         action = contextMenu.exec_(self.mapToGlobal(event.pos()))
         if action == close:
             self.close()
@@ -391,15 +347,15 @@ class MiniPlayer(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         # save state
-        self.state['toggles']['stay_on'] = self.stayTog
-        self.state['toggles']['title'] = self.titleTog
+        self.state["toggles"]["stay_on"] = self.stayTog
+        self.state["toggles"]["title"] = self.titleTog
 
-        self.state['positions']['x'] = self.pos().x()
-        self.state['positions']['y'] = self.pos().y()
+        self.state["positions"]["x"] = self.pos().x()
+        self.state["positions"]["y"] = self.pos().y()
 
-        self.state['size'] = self.frameGeometry().width()
+        self.state["size"] = self.frameGeometry().width()
 
-        with open('state.json', 'w') as save:
+        with open("state.json", "w") as save:
             json.dump(self.state, save, indent=4)
 
 
