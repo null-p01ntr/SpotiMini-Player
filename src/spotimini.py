@@ -5,13 +5,13 @@ from time import sleep
 from spotidata import SpotifyData
 from QtMarquee import MarqueeLabel
 
-from PyQt5.QtWidgets import QMenu, QLineEdit
+from PyQt5.QtWidgets import QMenu
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import QThread, Qt, QPoint, pyqtSignal
 
-sptObj = SpotifyData().spotifyObject
 
+sptObj = SpotifyData().spotifyObject
 
 class LiveFetch(QThread):
     sig = pyqtSignal(int)

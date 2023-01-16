@@ -46,7 +46,7 @@ class SpotifyData:
                         'client_secret': 'ENTER CLIENT SECRET HERE'
                     }))
             print("'creds.json' has been created, enter your credentials")
-            quit()
+            return
 
     def fetchData(self, spotifyObject):
         # WARNING spoti_dict crashing when changed from spotify
