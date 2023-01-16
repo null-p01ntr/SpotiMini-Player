@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+# build/
 develop-eggs/
 dist/
 downloads/
@@ -133,5 +133,8 @@ dmypy.json
 .vscode/*
 .DS_Store
 log.txt
+state.json
 *.cache*
 *creds.json
+*creds.py
+src/build

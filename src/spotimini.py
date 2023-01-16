@@ -1,3 +1,5 @@
+import os
+import io
 import sys
 import json
 from time import sleep
@@ -24,12 +26,28 @@ class LiveFetch(QThread):
 
 
 class MiniPlayer(QtWidgets.QMainWindow):
-    with open("state.json") as json_file:
-        state = json.load(json_file)
-
     print("SpotiMini RUNNING")
     spoti_dict = SpotifyData(sptObj).data_dict
 
+    if os.path.isfile('state.json') and os.access('state.json', os.R_OK):
+        with open("state.json") as json_file:
+            state = json.load(json_file)
+    else:  
+        default_state = {
+                            "toggles": {
+                                "stay_on": False,
+                                "title": True},
+                            "positions": {
+                                "x": 25,
+                                "y": 25},
+                            "size": 250
+                        }
+        with io.open(os.path.join('state.json'), 'w') as db_file:
+            db_file.write(
+                json.dumps(default_state))
+        print("no state file, rolled back to default values")
+        state = default_state
+    
     # load from state
     stayTog = state["toggles"]["stay_on"]
     titleTog = state["toggles"]["title"]
@@ -51,6 +69,7 @@ class MiniPlayer(QtWidgets.QMainWindow):
         sizePolicy = QtWidgets.QSizePolicy(
             QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred
         )
+        self.setWindowIcon(QtGui.QIcon('img/icon.ico'))
 
         # sizePolicy.setHeightForWidth(True)
         self.setSizePolicy(sizePolicy)
@@ -229,9 +248,10 @@ class MiniPlayer(QtWidgets.QMainWindow):
         _translate = QtCore.QCoreApplication.translate
         cover = QtGui.QPixmap()
 
-        # update title if song changed
+        # refresh title if song changed
         if self.prev_title != self.spoti_dict["title"]:
             self.song_info.setText(self.spoti_dict["title"])
+            self.song_info.px = 0
         self.prev_title = self.spoti_dict["title"]
         
         # stop sliding if title fits
@@ -372,7 +392,7 @@ class MiniPlayer(QtWidgets.QMainWindow):
         with open("state.json", "w") as save:
             json.dump(self.state, save, indent=4)
 
-
-app = QtWidgets.QApplication(sys.argv)
-ex = MiniPlayer()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QtWidgets.QApplication(sys.argv)
+    ex = MiniPlayer()
+    sys.exit(app.exec_())

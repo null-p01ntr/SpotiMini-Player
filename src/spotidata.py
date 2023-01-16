@@ -1,13 +1,13 @@
 import os
-import io
 import sys
-import json
 import urllib.request
 
 from datetime import datetime
 
 import spotipy
 
+from creds import _client_id, _client_secret
+# enter your own client_id and _secret
 
 class SpotifyData:
     def __init__(self, sptObj=None):
@@ -19,13 +19,10 @@ class SpotifyData:
             self.spotifyObject = self.auth()
 
     def auth(self):
-        if os.path.isfile('creds.json') and os.access('creds.json', os.R_OK):
-            print('USING EXISTING CREDS')
-            f = open('creds.json')
-            creds = json.load(f)
-            client_id = creds['client_id']
-            client_secret = creds['client_secret']
-            f.close()
+        if _client_id and _client_secret:
+            print('USING EMBEDED CREDENTIALS')
+            client_id = _client_id 
+            client_secret = _client_secret 
 
             redirect_uri = 'http://127.0.0.1:5000'
             scope = 'user-read-private user-read-playback-state user-modify-playback-state user-read-recently-played'
@@ -38,15 +35,8 @@ class SpotifyData:
 
             return spotifyObject
         else:
-            print('NO CRED FILE')
-            with io.open(os.path.join('creds.json'), 'w') as db_file:
-                db_file.write(
-                    json.dumps({
-                        'client_id': 'ENTER CLIENT ID HERE',
-                        'client_secret': 'ENTER CLIENT SECRET HERE'
-                    }))
-            print("'creds.json' has been created, enter your credentials")
-            return
+            print('CREDENTIALS NOT DEFINED')
+            return None
 
     def fetchData(self, spotifyObject):
         # WARNING spoti_dict crashing when changed from spotify
