@@ -113,6 +113,9 @@ class MiniPlayer(QtWidgets.QMainWindow):
             QLabel{border-radius : 8;}                        
             QLabel::hover{background-color : rgba(255, 255, 255, 150);}"""
         )
+        title_fits = self.song_info.textLength + 15 >= self.frameGeometry().width()
+        speed = 2 if title_fits else 0
+        self.song_info.setSpeed(speed)
 
         # size grips
         self.resizer1 = QtWidgets.QSizeGrip(self)
@@ -230,6 +233,17 @@ class MiniPlayer(QtWidgets.QMainWindow):
         if self.prev_title != self.spoti_dict["title"]:
             self.song_info.setText(self.spoti_dict["title"])
         self.prev_title = self.spoti_dict["title"]
+        
+        # stop sliding if title fits
+        if self.song_info.textLength + 15 >= self.frameGeometry().width():
+            # self.song_info.unpause()
+            self.song_info.setSpeed(2)
+        else:
+            # IDEA use pause and align
+            # self.song_info.pause()
+            self.song_info.setSpeed(0)
+            center_p = int(abs(self.song_info.textLength - self.frameGeometry().width())/2)
+            self.song_info.px = center_p
 
         self.setWindowTitle(_translate("MiniPlayer", self.spoti_dict["title"]))
         cover.loadFromData(self.spoti_dict["cover_data"])
