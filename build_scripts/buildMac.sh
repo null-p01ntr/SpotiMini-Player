@@ -1,5 +1,12 @@
-python3 setupMac.py py2app
-cd dist/SpotiMini.app/Contents/Resources/
-mkdir img
-mv *.png img
-/Users/hackintosh/_dev/Spotify_MiniPlayer/buildWin.ps1
+cd src
+
+pyinstaller \
+	--onefile \
+	--noconsole \
+	--distpath ../build/MacOS \
+	--icon=img/icon.icns \
+	--name=SpotiMini \
+	spotimini.py
+
+cp -R img ../build/MacOS/img
+cd ..

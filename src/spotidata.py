@@ -1,13 +1,27 @@
 import os
 import sys
+import pathlib
 import urllib.request
 
 from datetime import datetime
 
 import spotipy
 
-from creds import _client_id, _client_secret
 # enter your own client_id and _secret
+from creds import _client_id, _client_secret
+
+
+if getattr(sys, 'frozen', False):
+    # TEST OS based parsing
+    if '.app' in str(pathlib.Path(sys.executable).parent):  # MacOS
+        running_path = str(pathlib.Path(sys.executable).parent).split(
+            '.app')[0].split('MacOS')[0] + 'MacOS/'
+    else:  # Windows
+        running_path = str(pathlib.Path(sys.executable).parent)
+else:
+    running_path = os.path.dirname(__file__)
+data_path = running_path + 'data/'
+
 
 class SpotifyData:
     def __init__(self, sptObj=None):
@@ -19,10 +33,14 @@ class SpotifyData:
             self.spotifyObject = self.auth()
 
     def auth(self):
+        if not os.path.exists(os.path.join(data_path)):
+            os.makedirs(data_path)
+
         if _client_id and _client_secret:
-            print('USING EMBEDED CREDENTIALS')
-            client_id = _client_id 
-            client_secret = _client_secret 
+            print('-- USING EMBEDED CREDENTIALS --')
+
+            client_id = _client_id
+            client_secret = _client_secret
 
             redirect_uri = 'http://127.0.0.1:5000'
             scope = 'user-read-private user-read-playback-state user-modify-playback-state user-read-recently-played'
@@ -30,12 +48,14 @@ class SpotifyData:
                                                client_secret,
                                                redirect_uri,
                                                scope=scope,
-                                               open_browser=True)
+                                               open_browser=True,
+                                               cache_path=data_path + '/.cache'
+                                               )
             spotifyObject = spotipy.Spotify(oauth_manager=auth)
 
             return spotifyObject
         else:
-            print('CREDENTIALS NOT DEFINED')
+            print('ERROR: CREDENTIALS NOT DEFINED')
             return None
 
     def fetchData(self, spotifyObject):
@@ -87,7 +107,7 @@ class SpotifyData:
                 'online': online
             }
             return data_dict
-        
+
         except Exception as err:
             artist = lastPlayed['items'][0]['track']['artists'][0]['name']
             trackName = lastPlayed['items'][0]['track']['name']
@@ -99,10 +119,10 @@ class SpotifyData:
             cover_data = urllib.request.urlopen(album_art).read()
             toggle_states = [False, 'off']
             self.online = False
-            
-            print(f'---{err} Handled---')
+
+            print(f'ERROR: {err} Handled')
             # self.logger(err)
-            
+
             data_dict = {
                 'play_state': play_state,
                 'lastPlayed': lastPlayed,
@@ -150,7 +170,7 @@ class SpotifyData:
         file = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         error_message = f'{str(exc_type)} {str(file)} {str(exc_tb.tb_lineno)}\n{log_message}'
         # print(error_message)
-        with open('log.txt', 'a') as log_file:
+        with open(data_path + 'error_log.txt', 'a') as log_file:
             log_file.write(
                 f'{datetime.now().strftime("%d-%m-%Y %H:%M")}--{error_message}\n\n'
             )
