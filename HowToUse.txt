@@ -12,20 +12,13 @@
   _ Control playback (play, pause next previous etc.)
 0- You can remove them if you change mind.
 0- Your account is now connected to the account
-  _ !!make sure there is a file named ".cache" created in the main folder after you logged in!! -> for file locations see Troubleshooting section
-
-0- You can create a shortcut of SpotiMini and drag it to your desktop or any desired location
-
-
-!!make sure there is a file named ".cache" created in the main folder after you logged in!!
-(the cache file's location will be different in Mac computers -> see Troubleshooting section)
-
-0- You dont need to repeat login process
+  _ !!make sure there is a file named '.cache' created after you logged in!! -> for file locations see [Troubleshooting](#troubleshooting) section
 0- You can create a shortcut of SpotiMini and drag it to your desktop or any desired location
 
 Enjoy!!
 
 --How to Use--
+
 0- Play/Pause: Double or hover your mouse on the bottom middle of album art
 0- Next/Previous: Click on the right edge for next track and left edge for previous track
 0- Resize: Grab from the corners to resize
@@ -38,8 +31,9 @@ Enjoy!!
 
 --Troubleshooting--
 
-0- Delete the .cache file in the bin/{YourOS} folder and repeat login process
-0- To access .cache file on MacOS: right click the app "Show Package Contents" -> Contents/Resources press cmd+shift+."dot" to reveal hidden files
+0- Delete the '.cache' file in the 'build/{YourOS}/data' folder and repeat login process
+  _ (or delete the whole ```data``` folder, but size and toggles will reset)
+0- To reveal '.cache' file on MacOS: press 'cmd+shift+.' "dot" to reveal hidden files
 
 --Remove Permissions--
 0- If you're planning to stop using SpotiMini, you can remove permissions from your Spotify account's Manage Apps page

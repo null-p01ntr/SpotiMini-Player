@@ -15,18 +15,22 @@ from PyQt5.QtCore import QThread, Qt, QPoint, pyqtSignal
 
 
 # WARNING not best practice
+# IDEA make library
 if getattr(sys, 'frozen', False):
-    # TEST OS based parsing
     if '.app' in str(pathlib.Path(sys.executable).parent):  # MacOS
         running_path = str(pathlib.Path(sys.executable).parent).split(
-            '.app')[0].split('MacOS')[0] + 'MacOS/'
+            '.app')[0].split('MacOS')[0] + 'MacOS'
+        print('INFO: Running on MacOS')
     else:  # Windows
-        running_path = str(pathlib.Path(sys.executable).parent)
+        print('INFO: Running on Windows <3')
+        running_path = str(pathlib.Path(sys.executable).parent).replace('\\', '/')
 else:
-    running_path = os.path.dirname(__file__)
+    print('INFO: Running on Python')
+    running_path = str(pathlib.Path(__file__).parent)
 
-data_path = running_path + 'data/'
-img_path = running_path + 'img/'
+    
+data_path = running_path + '/data/'
+img_path = running_path + '/img/'
 
 print('INFO: running in: ', os.getcwd())
 print('INFO: data path = ', data_path)
@@ -426,6 +430,6 @@ class MiniPlayer(QtWidgets.QMainWindow):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     app.setWindowIcon(QtGui.QIcon(
-        img_path + 'Spotimini_ICON.png'))  # TEST windows
+        img_path + 'Spotimini_ICON.png'))
     ex = MiniPlayer()
     sys.exit(app.exec_())

@@ -5,7 +5,7 @@ Mini player for Spotify
 ## **First Time Setup**
 
 * Make sure Spotify is running from at least one of your devices or Web player.
-* Navigate to ```bin/{YourOS}``` folder
+* Navigate to ```build/{YourOS}``` folder
 * Run SpotiMini
 * Your default browser will pop-up with Spotify login page
 * Log in to your account and _authorize_ the application
@@ -16,9 +16,8 @@ Mini player for Spotify
   * Control playback (play, pause next previous etc.)
 * You can [remove](#remove-permissions) them if you change mind.
 * Your account is now connected to the account
-  * !!make sure there is a file named ```.cache``` created in the main folder after you logged in!! -> for file locations see [Troubleshooting](#troubleshooting) section
-
-* You can create a shortcut of SpotiMini and drag it to your desktop or any desired location
+  * !!make sure there is a file named ```.cache``` created after you logged in!! -> for file locations see [Troubleshooting](#troubleshooting) section
+* You can create a shortcut of SpotiMini and drag it to your desktop or any desired location.
 
 **Enjoy**
 
@@ -36,8 +35,9 @@ Mini player for Spotify
 
 ## **Troubleshooting**
 
-* Delete the ```.cache``` file in the ```bin/{YourOS}``` folder and repeat login process
-* To access ```.cache``` file on MacOS: right click the app "Show Package Contents" -> Contents/Resources press ```cmd+shift+.```"dot" to reveal hidden files
+* Delete the ```.cache``` file in the ```build/{YourOS}/data``` folder and repeat login process
+  * or delete the whole ```data``` folder, but size and toggles will reset
+* To reveal ```.cache``` file on MacOS: press ```cmd+shift+.```"dot" to reveal hidden files
 
 ## **Remove Permissions**
 
