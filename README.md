@@ -1,6 +1,9 @@
 # SpotiMini
 
-Mini player for Spotify
+Minimal desktop player for Spotify
+
+## **Download**
+[**Get latest from here**](https://github.com/null-p01ntr/SpotiMini-Player/releases)
 
 ## **First Time Setup**
 
