@@ -138,3 +138,4 @@ state.json
 *creds.json
 *creds.py
 src/build
+build/MacOS/SpotiMini

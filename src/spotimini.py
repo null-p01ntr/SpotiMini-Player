@@ -22,13 +22,14 @@ if getattr(sys, 'frozen', False):
             '.app')[0].split('MacOS')[0] + 'MacOS'
         print('INFO: Running on MacOS')
     else:  # Windows
-        print('INFO: Running on Windows <3')
-        running_path = str(pathlib.Path(sys.executable).parent).replace('\\', '/')
+        print('INFO: Running on Windows or Terminal')
+        running_path = str(pathlib.Path(
+            sys.executable).parent).replace('\\', '/')
 else:
     print('INFO: Running on Python')
     running_path = str(pathlib.Path(__file__).parent)
 
-    
+
 data_path = running_path + '/data/'
 img_path = running_path + '/img/'
 
